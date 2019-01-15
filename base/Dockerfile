@@ -5,8 +5,8 @@ ENV PORT 3000
 
 # Which versions?
 ENV PHP_VERSION 7.2.14
-# ENV REDIS_EXT_VERSION 4.2.0
-# ENV IMAGICK_EXT_VERSION 3.4.3
+ENV REDIS_EXT_VERSION 4.2.0
+ENV IMAGICK_EXT_VERSION 3.4.3
 ENV HTTPD_VERSION 2.4.37
 ENV NGINX_VERSION 1.8.1
 ENV NODE_VERSION 10.15.0
@@ -40,8 +40,8 @@ user nobody root;\n\
 RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/php-$PHP_VERSION.tar.gz | tar xz -C /app/.heroku/php \
  && mkdir -p /app/.heroku/php/etc/php/conf.d \
  && curl --silent --location https://raw.githubusercontent.com/heroku/heroku-buildpack-php/5a770b914549cf2a897cbbaf379eb5adf410d464/conf/php/php.ini > /app/.heroku/php/etc/php/php.ini \
- # && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20180731/redis-$REDIS_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php \
- # && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20180731/imagick-$IMAGICK_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php \
+ && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20180731/redis-$REDIS_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php \
+ && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20180731/imagick-$IMAGICK_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php \
  # Enable all optional exts
  && echo "\n\
 user_ini.cache_ttl = 30 \n\
@@ -52,15 +52,15 @@ extension=exif.so \n\
 extension=ftp.so \n\
 extension=gd.so\n\
 extension=gettext.so \n\
+extension=imagick.so \n\
 extension=intl.so \n\
 extension=mbstring.so \n\
 extension=pcntl.so \n\
-;extension=redis.so \n\
-;extension=imagick.so \n\
+extension=pdo_pgsql.so \n\
+extension=redis.so \n\
 extension=shmop.so \n\
 extension=soap.so \n\
 extension=sqlite3.so \n\
-extension=pdo_sqlite.so \n\
 extension=xmlrpc.so \n\
 extension=xsl.so\n\
 " >> /app/.heroku/php/etc/php/php.ini
