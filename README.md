@@ -1,6 +1,8 @@
-# docker-php
+# docker-heroku-php
 
 An opiniated [Docker](https://www.docker.com) image to mimic [Heroku](https://www.heroku.com) for local development. 
+
+[![CircleCI](https://circleci.com/gh/webstronauts/docker-heroku-php.svg?style=shield)](https://circleci.com/gh/webstronauts/docker-heroku-php)
 
 ## Author(s)
 
