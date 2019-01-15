@@ -14,9 +14,9 @@ jobs:
           command: |
             docker build --tag webstronauts/heroku-php:latest base
             docker build --tag webstronauts/heroku-php:circleci circleci
-            # docker login --username $DOCKER_USER --password $DOCKER_PASS
-            # docker push webstronauts/heroku-php:latest
-            # docker push webstronauts/heroku-php:circleci
+            docker login --username $DOCKER_USER --password $DOCKER_PASS
+            docker push webstronauts/heroku-php:latest
+            docker push webstronauts/heroku-php:circleci
 
 workflows:
   version: 2
