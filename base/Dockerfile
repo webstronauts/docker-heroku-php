@@ -59,7 +59,6 @@ extension=imagick.so \n\
 extension=intl.so \n\
 extension=mbstring.so \n\
 extension=pcntl.so \n\
-extension=pdo_pgsql.so \n\
 extension=redis.so \n\
 extension=shmop.so \n\
 extension=soap.so \n\
