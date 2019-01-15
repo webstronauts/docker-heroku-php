@@ -1,0 +1,25 @@
+---
+version: 2
+jobs:
+  publish:
+    working_directory: &dir ~/app
+    docker:
+      - image: docker:18.06.0-ce
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.06.0-ce
+      - run:
+          name: Build and publish Docker images
+          command: |
+            docker build --tag webstronauts/heroku-php:latest base
+            docker build --tag webstronauts/heroku-php:circleci circleci
+            # docker login --username $DOCKER_USER --password $DOCKER_PASS
+            # docker push webstronauts/heroku-php:latest
+            # docker push webstronauts/heroku-php:circleci
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - publish
