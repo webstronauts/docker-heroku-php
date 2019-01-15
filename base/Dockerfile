@@ -5,6 +5,7 @@ ENV PORT 3000
 
 # Which versions?
 ENV PHP_VERSION 7.2.14
+ENV APCU_EXT_VERSION 5.1.16
 ENV REDIS_EXT_VERSION 4.2.0
 ENV IMAGICK_EXT_VERSION 3.4.3
 ENV HTTPD_VERSION 2.4.37
@@ -40,12 +41,14 @@ user nobody root;\n\
 RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/php-$PHP_VERSION.tar.gz | tar xz -C /app/.heroku/php \
  && mkdir -p /app/.heroku/php/etc/php/conf.d \
  && curl --silent --location https://raw.githubusercontent.com/heroku/heroku-buildpack-php/5a770b914549cf2a897cbbaf379eb5adf410d464/conf/php/php.ini > /app/.heroku/php/etc/php/php.ini \
+ && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20180731/apcu-$APCU_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php \
  && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20180731/redis-$REDIS_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php \
  && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20180731/imagick-$IMAGICK_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php \
  # Enable all optional exts
  && echo "\n\
 user_ini.cache_ttl = 30 \n\
 opcache.enable = 0 \n\
+extension=apcu.so \n\
 extension=bcmath.so \n\
 extension=calendar.so \n\
 extension=exif.so \n\
