@@ -55,6 +55,7 @@ extension=exif.so \n\
 extension=ftp.so \n\
 extension=gd.so\n\
 extension=gettext.so \n\
+extension=gmp.so \n\
 extension=imagick.so \n\
 extension=intl.so \n\
 extension=mbstring.so \n\
