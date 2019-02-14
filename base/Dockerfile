@@ -46,6 +46,7 @@ RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-st
  && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20170718/imagick-$IMAGICK_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php \
  # Enable all optional exts
  && echo "\n\
+memory_limit = 512M \n\
 user_ini.cache_ttl = 30 \n\
 opcache.enable = 0 \n\
 extension=apcu.so \n\
