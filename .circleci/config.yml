@@ -1,22 +1,33 @@
----
 version: 2
+
 jobs:
   publish:
-    working_directory: &dir ~/app
+    working_directory: ~/app
     docker:
       - image: docker:18.06.0-ce
+        environment:
+          DOCKER_IMAGE: webstronauts/heroku-php
     steps:
       - checkout
       - setup_remote_docker:
           version: 18.06.0-ce
+      - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+      - run:
+          name: Load previously built Docker images
+          command: |
+            set +o pipefail
+            DOCKER_BASE_IMAGE=$(grep "^FROM" base/Dockerfile | cut -d' ' -f2 | uniq)
+            docker pull $DOCKER_BASE_IMAGE || true
+            docker pull $DOCKER_IMAGE:latest || true
+            docker pull $DOCKER_IMAGE:circleci || true
       - run:
           name: Build and publish Docker images
           command: |
-            docker build --tag webstronauts/heroku-php:latest base
-            docker build --tag webstronauts/heroku-php:circleci circleci
-            docker login --username $DOCKER_USER --password $DOCKER_PASS
-            docker push webstronauts/heroku-php:latest
-            docker push webstronauts/heroku-php:circleci
+            docker build --cache-from $DOCKER_IMAGE:latest --tag $DOCKER_IMAGE:latest --tag $DOCKER_IMAGE:$CIRCLE_SHA1 base
+            docker build --cache-from $DOCKER_IMAGE:latest --cache-from $DOCKER_IMAGE:circleci --tag $DOCKER_IMAGE:circleci circleci
+            docker push $DOCKER_IMAGE:$CIRCLE_SHA1
+            docker push $DOCKER_IMAGE:latest
+            docker push $DOCKER_IMAGE:circleci
 
 workflows:
   version: 2
