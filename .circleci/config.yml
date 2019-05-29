@@ -15,19 +15,15 @@ aliases:
       - setup_remote_docker:
           version: 18.06.0-ce
       - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-      - run:
-          name: Load base Docker image
-          command: |
-            set +o pipefail
-            DOCKER_BASE_IMAGE=$(grep "^FROM" base/Dockerfile | cut -d' ' -f2 | uniq)
-            docker pull $DOCKER_BASE_IMAGE || true
-      - run:
-          name: Build and publish Docker images
-          command: |
-            docker build --build-arg PHP_VERSION=${PHP_VERSION} --tag ${DOCKER_IMAGE}:${PHP_ALIAS} base
-            docker build --build-arg PHP_ALIAS=${PHP_ALIAS} --cache-from ${DOCKER_IMAGE}:${PHP_ALIAS} --tag ${DOCKER_IMAGE}:${PHP_ALIAS}-circleci circleci
-            docker push ${DOCKER_IMAGE}:${PHP_ALIAS}
-            docker push ${DOCKER_IMAGE}:${PHP_ALIAS}-circleci
+      - run: |
+          set +o pipefail
+          DOCKER_BASE_IMAGE=$(grep "^FROM" base/Dockerfile | cut -d' ' -f2 | uniq)
+          docker pull $DOCKER_BASE_IMAGE || true
+      - run: docker build --build-arg PHP_VERSION=${PHP_VERSION} --tag ${DOCKER_IMAGE}:${PHP_ALIAS} base
+      - run: docker build --build-arg PHP_ALIAS=${PHP_ALIAS} --cache-from ${DOCKER_IMAGE}:${PHP_ALIAS} --tag ${DOCKER_IMAGE}:${PHP_ALIAS}-circleci circleci
+      - run: |
+          docker push ${DOCKER_IMAGE}:${PHP_ALIAS}
+          docker push ${DOCKER_IMAGE}:${PHP_ALIAS}-circleci
 
 jobs:
   publish-php7.1:
