@@ -24,8 +24,8 @@ aliases:
       - run:
           name: Build and publish Docker images
           command: |
-            docker build --tag ${DOCKER_IMAGE}:${PHP_ALIAS} base
-            docker build --cache-from ${DOCKER_IMAGE}:${PHP_ALIAS} --tag ${DOCKER_IMAGE}:${PHP_ALIAS}-circleci circleci
+            docker build --build-arg PHP_VERSION=${PHP_VERSION} --tag ${DOCKER_IMAGE}:${PHP_ALIAS} base
+            docker build --build-arg PHP_VERSION=${PHP_VERSION} --cache-from ${DOCKER_IMAGE}:${PHP_ALIAS} --tag ${DOCKER_IMAGE}:${PHP_ALIAS}-circleci circleci
             docker push ${DOCKER_IMAGE}:${PHP_ALIAS}
             docker push ${DOCKER_IMAGE}:${PHP_ALIAS}-circleci
 
