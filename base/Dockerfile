@@ -42,10 +42,11 @@ user nobody root;\n\
 # Install and configure PHP
 RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-$HEROKU_CEDAR_VERSION-stable/php-$PHP_VERSION.tar.gz | tar xz -C /app/.heroku/php \
  && mkdir -p /app/.heroku/php/etc/php/conf.d \
+ && ZEND_MODULE_API_VERSION=$(php -i | grep 'PHP API' | sed -e 's/PHP API => //') \
  && curl --silent --location https://raw.githubusercontent.com/heroku/heroku-buildpack-php/5a770b914549cf2a897cbbaf379eb5adf410d464/conf/php/php.ini > /app/.heroku/php/etc/php/php.ini \
- && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-${HEROKU_CEDAR_VERSION}-stable/extensions/no-debug-non-zts-20170718/apcu-${APCU_EXT_VERSION}.tar.gz | tar xz -C /app/.heroku/php \
- && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-${HEROKU_CEDAR_VERSION}-stable/extensions/no-debug-non-zts-20170718/redis-${REDIS_EXT_VERSION}.tar.gz | tar xz -C /app/.heroku/php \
- && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-${HEROKU_CEDAR_VERSION}-stable/extensions/no-debug-non-zts-20170718/imagick-${IMAGICK_EXT_VERSION}.tar.gz | tar xz -C /app/.heroku/php \
+ && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-${HEROKU_CEDAR_VERSION}-stable/extensions/no-debug-non-zts-${ZEND_MODULE_API_VERSION}/apcu-${APCU_EXT_VERSION}.tar.gz | tar xz -C /app/.heroku/php \
+ && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-${HEROKU_CEDAR_VERSION}-stable/extensions/no-debug-non-zts-${ZEND_MODULE_API_VERSION}/redis-${REDIS_EXT_VERSION}.tar.gz | tar xz -C /app/.heroku/php \
+ && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-${HEROKU_CEDAR_VERSION}-stable/extensions/no-debug-non-zts-${ZEND_MODULE_API_VERSION}/imagick-${IMAGICK_EXT_VERSION}.tar.gz | tar xz -C /app/.heroku/php \
  # Enable all optional exts
  && echo "\n\
 memory_limit = 512M \n\
