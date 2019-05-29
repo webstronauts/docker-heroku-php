@@ -1,12 +1,12 @@
-FROM heroku/heroku:18
+# Which versions?
+ARG PHP_VERSION
+ARG HEROKU_CEDAR_VERSION=18
+
+FROM heroku/heroku:$HEROKU_CEDAR_VERSION
 
 # Internally, we arbitrarily use port 3000
 ENV PORT 3000
 
-# Which versions?
-ARG PHP_VERSION
-
-ENV PHP_VERSION $PHP_VERSION
 ENV APCU_EXT_VERSION 5.1.17
 ENV REDIS_EXT_VERSION 4.3.0
 ENV IMAGICK_EXT_VERSION 3.4.3
@@ -24,7 +24,7 @@ WORKDIR /app/user
 ENV PATH /app/.heroku/php/bin:/app/.heroku/php/sbin:/app/.heroku/node/bin/:/app/user/node_modules/.bin:/app/user/vendor/bin:$PATH
 
 # Install and configure Apache
-RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/apache-$HTTPD_VERSION.tar.gz | tar xz -C /app/.heroku/php \
+RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-${HEROKU_CEDAR_VERSION}-stable/apache-${HTTPD_VERSION}.tar.gz | tar xz -C /app/.heroku/php \
  && curl --silent --location https://raw.githubusercontent.com/heroku/heroku-buildpack-php/5a770b914549cf2a897cbbaf379eb5adf410d464/conf/apache2/httpd.conf.default > /app/.heroku/php/etc/apache2/httpd.conf \
  # FPM socket permissions workaround when run as root
  && echo "\n\
@@ -32,7 +32,7 @@ Group root\n\
 " >> /app/.heroku/php/etc/apache2/httpd.conf
 
 # Install and configure Nginx
-RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/nginx-$NGINX_VERSION.tar.gz | tar xz -C /app/.heroku/php \
+RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-${HEROKU_CEDAR_VERSION}-stable/nginx-${NGINX_VERSION}.tar.gz | tar xz -C /app/.heroku/php \
  && curl --silent --location https://raw.githubusercontent.com/heroku/heroku-buildpack-php/5a770b914549cf2a897cbbaf379eb5adf410d464/conf/nginx/nginx.conf.default > /app/.heroku/php/etc/nginx/nginx.conf \
  # FPM socket permissions workaround when run as root
  && echo "\n\
@@ -40,12 +40,12 @@ user nobody root;\n\
 " >> /app/.heroku/php/etc/nginx/nginx.conf
 
 # Install and configure PHP
-RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/php-$PHP_VERSION.tar.gz | tar xz -C /app/.heroku/php \
+RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-$HEROKU_CEDAR_VERSION-stable/php-$PHP_VERSION.tar.gz | tar xz -C /app/.heroku/php \
  && mkdir -p /app/.heroku/php/etc/php/conf.d \
  && curl --silent --location https://raw.githubusercontent.com/heroku/heroku-buildpack-php/5a770b914549cf2a897cbbaf379eb5adf410d464/conf/php/php.ini > /app/.heroku/php/etc/php/php.ini \
- && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20170718/apcu-$APCU_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php \
- && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20170718/redis-$REDIS_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php \
- && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20170718/imagick-$IMAGICK_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php \
+ && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-${HEROKU_CEDAR_VERSION}-stable/extensions/no-debug-non-zts-20170718/apcu-${APCU_EXT_VERSION}.tar.gz | tar xz -C /app/.heroku/php \
+ && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-${HEROKU_CEDAR_VERSION}-stable/extensions/no-debug-non-zts-20170718/redis-${REDIS_EXT_VERSION}.tar.gz | tar xz -C /app/.heroku/php \
+ && curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-${HEROKU_CEDAR_VERSION}-stable/extensions/no-debug-non-zts-20170718/imagick-${IMAGICK_EXT_VERSION}.tar.gz | tar xz -C /app/.heroku/php \
  # Enable all optional exts
  && echo "\n\
 memory_limit = 512M \n\
