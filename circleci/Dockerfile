@@ -1,4 +1,5 @@
-FROM webstronauts/heroku-php
+ARG PHP_ALIAS
+FROM webstronauts/heroku-php:${PHP_ALIAS}
 
 # Which versions?
 ENV DOCKERIZE_VERSION v0.6.1

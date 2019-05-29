@@ -1,39 +1,78 @@
 version: 2
 
-jobs:
-  publish:
+aliases:
+  - &defaults
     working_directory: ~/app
     docker:
-      - image: docker:18.06.0-ce
+      - image: &docker_runtime docker:18.06.0-ce
         environment:
+          &docker_environment
           DOCKER_IMAGE: webstronauts/heroku-php
+
+  - &publish_steps
     steps:
       - checkout
       - setup_remote_docker:
           version: 18.06.0-ce
       - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
       - run:
-          name: Load previously built Docker images
+          name: Load base Docker image
           command: |
             set +o pipefail
             DOCKER_BASE_IMAGE=$(grep "^FROM" base/Dockerfile | cut -d' ' -f2 | uniq)
             docker pull $DOCKER_BASE_IMAGE || true
-            docker pull $DOCKER_IMAGE:latest || true
-            docker pull $DOCKER_IMAGE:circleci || true
       - run:
           name: Build and publish Docker images
           command: |
-            docker build --cache-from $DOCKER_IMAGE:latest --tag $DOCKER_IMAGE:latest --tag $DOCKER_IMAGE:$CIRCLE_SHA1 base
-            docker build --cache-from $DOCKER_IMAGE:latest --cache-from $DOCKER_IMAGE:circleci --tag $DOCKER_IMAGE:circleci circleci
-            docker push $DOCKER_IMAGE:$CIRCLE_SHA1
-            docker push $DOCKER_IMAGE:latest
-            docker push $DOCKER_IMAGE:circleci
+            docker build --tag ${DOCKER_IMAGE}:${PHP_ALIAS} base
+            docker build --cache-from ${DOCKER_IMAGE}:${PHP_ALIAS} --tag ${DOCKER_IMAGE}:${PHP_ALIAS}-circleci circleci
+            docker push ${DOCKER_IMAGE}:${PHP_ALIAS}
+            docker push ${DOCKER_IMAGE}:${PHP_ALIAS}-circleci
+
+jobs:
+  publish-php7.1:
+    <<: *defaults
+    docker:
+      - image: *docker_runtime
+        environment:
+          <<: *docker_environment
+          PHP_ALIAS: 7.1
+          PHP_VERSION: 7.1.18
+    <<: *publish_steps
+  
+  publish-php7.2:
+    <<: *defaults
+    docker:
+      - image: *docker_runtime
+        environment:
+          <<: *docker_environment
+          PHP_ALIAS: 7.2
+          PHP_VERSION: 7.2.18
+    <<: *publish_steps
+  
+  publish-php7.3:
+    <<: *defaults
+    docker:
+      - image: *docker_runtime
+        environment:
+          <<: *docker_environment
+          PHP_ALIAS: 7.3
+          PHP_VERSION: 7.3.5
+    <<: *publish_steps
 
 workflows:
   version: 2
-  build:
+  publish:
     jobs:
-      - publish:
+      - publish-php7.1:
+          filters:
+            branches:
+              only: master
+      - publish-php7.2:
+          filters:
+            branches:
+              only: master
+      - publish-php7.3:
           filters:
             branches:
               only: master
