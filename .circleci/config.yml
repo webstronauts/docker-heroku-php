@@ -33,7 +33,7 @@ jobs:
         environment:
           <<: *docker_environment
           PHP_ALIAS: 7.1
-          PHP_VERSION: 7.1.29
+          PHP_VERSION: 7.1.30
     <<: *publish_steps
   
   publish-php7.2:
@@ -43,7 +43,7 @@ jobs:
         environment:
           <<: *docker_environment
           PHP_ALIAS: 7.2
-          PHP_VERSION: 7.2.18
+          PHP_VERSION: 7.2.19
     <<: *publish_steps
   
   publish-php7.3:
@@ -53,7 +53,7 @@ jobs:
         environment:
           <<: *docker_environment
           PHP_ALIAS: 7.3
-          PHP_VERSION: 7.3.5
+          PHP_VERSION: 7.3.6
     <<: *publish_steps
 
 workflows:
