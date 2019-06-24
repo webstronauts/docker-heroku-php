@@ -18,8 +18,10 @@ ENV NODE_VERSION=10.15.0
 ENV COMPOSER_VERSION=1.8.5
 ENV YARN_VERSION=1.13.0
 
+ENV COMPOSER_HOME /app/.composer/
+
 # Create some needed directories
-RUN mkdir -p /app/.heroku/php /app/.heroku/node /app/.profile.d
+RUN mkdir -p /app/.heroku/php /app/.heroku/node /app/.profile.d $COMPOSER_HOME
 WORKDIR /app/user
 
 # Locate our binaries
