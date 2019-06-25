@@ -20,6 +20,12 @@ ENV YARN_VERSION=1.13.0
 
 ENV COMPOSER_HOME /app/.composer/
 
+# make apt non-interactive
+RUN echo 'APT::Get::Assume-Yes "true";' > /etc/apt/apt.conf.d/90docker \
+ && echo 'DPkg::Options "--force-confnew";' >> /etc/apt/apt.conf.d/90docker
+
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Create some needed directories
 RUN mkdir -p /app/.heroku/php /app/.heroku/node /app/.profile.d $COMPOSER_HOME
 WORKDIR /app/user
@@ -77,8 +83,10 @@ extension=xsl.so\n\
 " >> /app/.heroku/php/etc/php/php.ini
 
 # Install xdebug (but don't enable)
-RUN apt-get update && apt-get -y install gcc make autoconf libc-dev pkg-config \
- && pecl install xdebug
+RUN apt-get update \
+ && apt-get -y install gcc make autoconf libc-dev pkg-config \
+ && pecl install xdebug \
+ && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/composer-$COMPOSER_VERSION.tar.gz | tar xz -C /app/.heroku/php
@@ -88,20 +96,3 @@ RUN curl --silent --location https://s3pository.heroku.com/node/v$NODE_VERSION/n
 
 # Install Yarn
 RUN curl --silent --location https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz | tar --strip-components=1 -xz -C /app/.heroku/node
-
-# Install Chrome WebDriver
-RUN CHROMEDRIVER_VERSION=`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE` \
- && mkdir -p /opt/chromedriver-$CHROMEDRIVER_VERSION \
- && curl -sS -o /tmp/chromedriver_linux64.zip http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip \
- && unzip -qq /tmp/chromedriver_linux64.zip -d /opt/chromedriver-$CHROMEDRIVER_VERSION \
- && rm /tmp/chromedriver_linux64.zip \
- && chmod +x /opt/chromedriver-$CHROMEDRIVER_VERSION/chromedriver \
- && ln -fs /opt/chromedriver-$CHROMEDRIVER_VERSION/chromedriver /usr/local/bin/chromedriver
-
-# Install Google Chrome
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
- && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
- && apt-get update -qqy \
- && apt-get -qqy install google-chrome-stable \
- && rm /etc/apt/sources.list.d/google-chrome.list \
- && rm -rf /var/lib/apt/lists/*
