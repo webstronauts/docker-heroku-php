@@ -10,12 +10,12 @@ ENV PORT 3000
 ENV HEROKU_CEDAR_VERSION=$HEROKU_CEDAR_VERSION
 ENV PHP_VERSION=$PHP_VERSION
 ENV APCU_EXT_VERSION=5.1.17
-ENV REDIS_EXT_VERSION=4.3.0
-ENV IMAGICK_EXT_VERSION=3.4.3
-ENV HTTPD_VERSION=2.4.39
+ENV REDIS_EXT_VERSION=5.0.2
+ENV IMAGICK_EXT_VERSION=3.4.4
+ENV HTTPD_VERSION=2.4.41
 ENV NGINX_VERSION=1.14.2
 ENV NODE_VERSION=10.15.0
-ENV COMPOSER_VERSION=1.8.5
+ENV COMPOSER_VERSION=1.9.0
 ENV YARN_VERSION=1.13.0
 
 ENV COMPOSER_HOME /app/.composer/
@@ -82,7 +82,7 @@ extension=xmlrpc.so \n\
 extension=xsl.so\n\
 " >> /app/.heroku/php/etc/php/php.ini
 
-# Install xdebug (but don't enable)
+# Install Xdebug (but don't enable)
 RUN apt-get update \
  && apt-get -y install gcc make autoconf libc-dev pkg-config \
  && pecl install xdebug \
