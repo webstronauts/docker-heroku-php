@@ -20,14 +20,14 @@ aliases:
           DOCKER_BASE_IMAGE=$(grep "^FROM" base/Dockerfile | cut -d' ' -f2 | uniq)
           docker pull $DOCKER_BASE_IMAGE || true
       - run: docker build --build-arg PHP_VERSION=${PHP_VERSION} --tag ${DOCKER_IMAGE}:${PHP_ALIAS} base
-      - run: docker build --build-arg PHP_ALIAS=${PHP_ALIAS} --cache-from ${DOCKER_IMAGE}:${PHP_ALIAS} --tag ${DOCKER_IMAGE}:${PHP_ALIAS}-circleci circleci
+      - run: docker build --build-arg PHP_ALIAS=${PHP_ALIAS} --cache-from ${DOCKER_IMAGE}:${PHP_ALIAS} --tag ${DOCKER_IMAGE}:${PHP_ALIAS}-ci ci
       - run: docker build --build-arg PHP_ALIAS=${PHP_ALIAS} --cache-from ${DOCKER_IMAGE}:${PHP_ALIAS} --tag ${DOCKER_IMAGE}:${PHP_ALIAS}-browsers browsers
-      - run: docker build --build-arg PHP_ALIAS=${PHP_ALIAS}-browsers --cache-from ${DOCKER_IMAGE}:${PHP_ALIAS}-browsers --tag ${DOCKER_IMAGE}:${PHP_ALIAS}-browsers-circleci circleci
+      - run: docker build --build-arg PHP_ALIAS=${PHP_ALIAS}-browsers --cache-from ${DOCKER_IMAGE}:${PHP_ALIAS}-browsers --tag ${DOCKER_IMAGE}:${PHP_ALIAS}-browsers-ci ci
       - run: |
           docker push ${DOCKER_IMAGE}:${PHP_ALIAS}
-          docker push ${DOCKER_IMAGE}:${PHP_ALIAS}-circleci
+          docker push ${DOCKER_IMAGE}:${PHP_ALIAS}-ci
           docker push ${DOCKER_IMAGE}:${PHP_ALIAS}-browsers
-          docker push ${DOCKER_IMAGE}:${PHP_ALIAS}-browsers-circleci
+          docker push ${DOCKER_IMAGE}:${PHP_ALIAS}-browsers-ci
 
 jobs:
   publish-php7.1:
