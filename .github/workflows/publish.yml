@@ -1,0 +1,34 @@
+name: Publish
+
+on:
+  push
+
+jobs:
+  publish:
+    runs-on: docker:18.06.0-ce
+
+    strategy:
+      matrix:
+        php-alias: ['7.1', '7.2', '7.3']
+        include:
+          - php-alias: '7.1'
+            php-version: '7.1.30'
+          - php-alias: '7.2'
+            php-version: '7.2.19'
+          - php-alias: '7.3'
+            php-version: '7.3.6'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Pull latest base image
+        run: |
+          set +o pipefail
+          DOCKER_BASE_IMAGE=$(grep "^FROM" base/Dockerfile | cut -d' ' -f2 | uniq)
+          docker pull $DOCKER_BASE_IMAGE || true
+      - name: Build docker images
+        run: |
+          docker build --build-arg PHP_VERSION=${{ matrix.php-version }} --tag ${DOCKER_IMAGE}:${{ matrix.php-alias }} base
+          docker build --build-arg PHP_ALIAS=${{ matrix.php-alias }} --cache-from ${DOCKER_IMAGE}:${{ matrix.php-alias }} --tag ${DOCKER_IMAGE}:${{ matrix.php-alias }}-ci ci
+          docker build --build-arg PHP_ALIAS=${{ matrix.php-alias }} --cache-from ${DOCKER_IMAGE}:${{ matrix.php-alias }} --tag ${DOCKER_IMAGE}:${{ matrix.php-alias }}-browsers browsers
+          docker build --build-arg PHP_ALIAS=${{ matrix.php-alias }}-browsers --cache-from ${DOCKER_IMAGE}:${PHP_ALIAS}-browsers --tag ${DOCKER_IMAGE}:${{ matrix.php-alias }}-browsers-ci ci
